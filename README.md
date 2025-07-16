@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # VCF Viewer
 
 A modern, client-side web application for viewing and analyzing VCF (Variant Call Format) files. Built with Svelte 4 and designed to run entirely in the browser without requiring server infrastructure.
@@ -238,3 +239,7 @@ This project is open source and available under the [MIT License](LICENSE).
 - Built with [Svelte](https://svelte.dev) and [SvelteKit](https://kit.svelte.dev)
 - Uses [AG-Grid](https://ag-grid.com) for data visualization
 - VCF parsing inspired by genomics community standards
+=======
+# vcfview
+testing pyscript
+>>>>>>> origin/main
