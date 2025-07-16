@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # VCF Viewer
 
 A modern, client-side web application for viewing and analyzing VCF (Variant Call Format) files. Built with Svelte 4 and designed to run entirely in the browser without requiring server infrastructure.
