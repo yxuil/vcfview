@@ -8,10 +8,6 @@ node_modules
 /.svelte-kit
 /build
 
-# Direct build files (uncomment to ignore them)
-# index.html
-# _app/
-
 # OS
 .DS_Store
 Thumbs.db
