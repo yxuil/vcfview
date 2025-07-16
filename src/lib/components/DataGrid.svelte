@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import { Grid, GridApi, ColumnApi, type GridOptions } from 'ag-grid-community';
+  import { Grid, type GridOptions } from 'ag-grid-community';
   import { vcfData, filteredRecords, loading } from '../stores/data-store';
   import type { VCFRecord } from '../types/vcf';
   
   let gridContainer: HTMLElement;
-  let gridApi: GridApi;
-  let columnApi: ColumnApi;
+  let gridApi: any;
+  let columnApi: any;
   
   $: records = $filteredRecords;
   $: if (gridApi && records) {
@@ -161,8 +161,6 @@
         minWidth: 80
       },
       animateRows: true,
-      enableRangeSelection: true,
-      enableCellTextSelection: true,
       suppressMenuHide: true,
       rowSelection: 'multiple',
       suppressRowClickSelection: true,
