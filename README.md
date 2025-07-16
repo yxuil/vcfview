@@ -2,6 +2,12 @@
 
 A modern, client-side web application for viewing and analyzing VCF (Variant Call Format) files. Built with Svelte 4 and designed to run entirely in the browser without requiring server infrastructure.
 
+## 🌟 Live Demo
+
+**Try it now:** [https://yxuil.github.io/vcfview](https://yxuil.github.io/vcfview)
+
+No installation required! Just click the link above to start analyzing VCF files immediately.
+
 ## Features
 
 - **Client-side VCF Processing**: Upload and analyze VCF files directly in your browser
@@ -16,21 +22,20 @@ A modern, client-side web application for viewing and analyzing VCF (Variant Cal
 
 ## Getting Started
 
-### Option 1: Use Directly from GitHub (No Setup Required)
+### 🚀 Quick Deploy to GitHub Pages
 
-You can use the VCF Viewer directly from GitHub without any setup:
+Want to deploy your own instance immediately? Here's the fastest way:
 
-**Using jsDelivr CDN:**
-```
-https://cdn.jsdelivr.net/gh/YOUR_USERNAME/vcfview@main/index.html
-```
+1. **Click "Use this template" or Fork this repository**
+2. **Enable GitHub Pages:**
+   - Go to Settings → Pages
+   - Under "Source", select "GitHub Actions"
+3. **Wait for deployment** (check the Actions tab)
+4. **Access your app** at `https://yxuil.github.io/vcfview`
 
-**Using GitHub Raw (slower):**
-```
-https://raw.githubusercontent.com/YOUR_USERNAME/vcfview/main/index.html
-```
+That's it! Your VCF viewer is now live and ready to use.
 
-### Option 2: Local Development Setup
+### 💻 Local Development
 
 #### Prerequisites
 
@@ -57,9 +62,7 @@ npm run dev
 
 4. Open your browser and navigate to `http://localhost:5173`
 
-### Building for Production
-
-#### Option A: Standard Build (for hosting services)
+#### Building for Production
 
 To create a production build:
 
@@ -68,16 +71,6 @@ npm run build
 ```
 
 The built files will be in the `build` directory, ready for deployment to any static hosting service.
-
-#### Option B: Direct Repository Build (for GitHub direct access)
-
-To build for direct repository access:
-
-```bash
-npm run build:direct
-```
-
-This creates `index.html` and `_app/` in the root directory that can be accessed directly from GitHub.
 
 ## Usage
 
@@ -136,43 +129,44 @@ https://cdn.jsdelivr.net/gh/johndoe/genomics-data@main/samples/variants.vcf.gz
 - Both compressed (.vcf.gz) and uncompressed (.vcf) files are supported
 - Make sure your repository is public or the files are accessible
 
-## Deployment Options
+## Deployment
 
-### Option 1: GitHub Pages (Recommended)
+### GitHub Pages (Recommended)
 
-1. Enable GitHub Pages in your repository settings
-2. Use the provided GitHub Actions workflow
-3. Your app will be available at `https://USERNAME.github.io/REPOSITORY`
+This repository includes a GitHub Actions workflow that automatically deploys to GitHub Pages:
 
-### Option 2: Direct Repository Access
+#### Setup Instructions:
 
-**Quick Setup:**
-```bash
-# Clone and setup
-git clone https://github.com/USERNAME/vcfview.git
-cd vcfview
-npm install
+1. **Fork or clone this repository**
 
-# Build for direct access
-npm run build:direct
+2. **Enable GitHub Pages:**
+   - Go to your repository's Settings
+   - Navigate to "Pages" in the sidebar
+   - Under "Source", select "GitHub Actions"
 
-# Commit the generated files
-git add index.html _app/
-git commit -m "Add direct access build files"
-git push
-```
+3. **Push to main branch:**
+   ```bash
+   git push origin main
+   ```
 
-**Access your app:**
-- **jsDelivr CDN**: `https://cdn.jsdelivr.net/gh/USERNAME/REPOSITORY@main/index.html`
-- **GitHub Raw**: `https://raw.githubusercontent.com/USERNAME/REPOSITORY/main/index.html`
+4. **Your app will be available at:**
+   ```
+   https://yxuil.github.io/vcfview
+   ```
 
-**Benefits:**
-- ✅ No GitHub Pages setup required
-- ✅ Works immediately after pushing
-- ✅ CDN delivery via jsDelivr
-- ✅ Can be embedded in other pages
+#### How it works:
+- The workflow automatically triggers on pushes to the `main` branch
+- It builds the application using `npm run build`
+- Deploys the `build` directory to GitHub Pages
+- Your site updates automatically with each push
 
-### Option 3: Other Static Hosting
+#### Troubleshooting:
+- **404 Error:** Make sure GitHub Pages is enabled and set to "GitHub Actions"
+- **Build Failed:** Check the Actions tab for error details
+- **Site not updating:** Wait 1-2 minutes after pushing changes
+- **Permission errors:** Ensure your repository has Actions enabled
+
+### Other Deployment Options
 
 Deploy the `build` directory to any static hosting service:
 - Netlify
@@ -202,8 +196,7 @@ Deploy the `build` directory to any static hosting service:
 ### Available Scripts
 
 - `npm run dev` - Start development server
-- `npm run build` - Build for production (standard hosting)
-- `npm run build:direct` - Build for direct repository access
+- `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run check` - Run TypeScript checks
 
@@ -238,7 +231,3 @@ This project is open source and available under the [MIT License](LICENSE).
 - Built with [Svelte](https://svelte.dev) and [SvelteKit](https://kit.svelte.dev)
 - Uses [AG-Grid](https://ag-grid.com) for data visualization
 - VCF parsing inspired by genomics community standards
-=======
-# vcfview
-testing pyscript
->>>>>>> origin/main

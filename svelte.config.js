@@ -9,14 +9,8 @@ const config = {
 
 	kit: {
 		adapter: adapter({
-			fallback: 'index.html',
-			pages: 'build',
-			assets: 'build'
-		}),
-		paths: {
-			base: process.env.NODE_ENV === 'production' ? '' : '',
-			assets: process.env.NODE_ENV === 'production' ? '' : ''
-		}
+			fallback: 'index.html'
+		})
 	}
 };
 
