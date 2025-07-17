@@ -1,13 +1,64 @@
+/* AG-Grid CSS imports */
+@import 'ag-grid-community/styles/ag-grid.css';
+@import 'ag-grid-community/styles/ag-theme-alpine.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* Custom AG-Grid theme overrides */
 .ag-theme-alpine {
-  --ag-header-height: 48px;
-  --ag-row-height: 36px;
-  --ag-font-size: 13px;
-  --ag-font-family: 'Inter', system-ui, sans-serif;
+  --ag-header-height: 40px;
+  --ag-row-height: 32px;
+  --ag-font-size: 12px;
+  --ag-font-family: system-ui, -apple-system, sans-serif;
+  --ag-header-background-color: #f8fafc;
+  --ag-header-cell-hover-background-color: #e2e8f0;
+  --ag-row-hover-color: #f1f5f9;
+  --ag-selected-row-background-color: #dbeafe;
+}
+
+.ag-theme-alpine .ag-header-cell {
+  font-weight: 600;
+  color: #374151;
+}
+
+.ag-theme-alpine .ag-cell {
+  border-right: 1px solid #e5e7eb;
+}
+
+.ag-theme-alpine .ag-pinned-left-cols-container {
+  border-right: 2px solid #d1d5db;
+}
+
+/* INFO header styling */
+.ag-theme-alpine .info-group-header {
+  background-color: #f3f4f6 !important;
+  border-bottom: 2px solid #d1d5db !important;
+}
+
+.ag-theme-alpine .info-header-collapsed {
+  background-color: #f9fafb !important;
+}
+
+.ag-theme-alpine .info-group-header:hover,
+.ag-theme-alpine .info-header-collapsed:hover {
+  background-color: #e5e7eb !important;
+}
+
+/* Sample header styling */
+.ag-theme-alpine .sample-group-header {
+  background-color: #eff6ff !important;
+  border-bottom: 2px solid #bfdbfe !important;
+}
+
+.ag-theme-alpine .sample-header-collapsed {
+  background-color: #f8fafc !important;
+}
+
+.ag-theme-alpine .sample-group-header:hover,
+.ag-theme-alpine .sample-header-collapsed:hover {
+  background-color: #dbeafe !important;
 }
 
 /* Custom styles */

@@ -109,7 +109,7 @@
       </div>
     {:else}
       <!-- Data Grid -->
-      <div class="h-screen max-h-[calc(100vh-120px)]">
+      <div class="h-[calc(100vh-200px)] w-full">
         <DataGrid bind:this={dataGrid} />
       </div>
     {/if}

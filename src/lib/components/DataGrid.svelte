@@ -7,6 +7,8 @@
   let gridContainer: HTMLElement;
   let gridApi: any;
   let columnApi: any;
+  let showExpandedInfo = false;
+  let showExpandedSamples = false;
   
   $: records = $filteredRecords;
   $: if (gridApi && records) {
@@ -29,18 +31,38 @@
       
       // Add INFO fields
       if (record.INFO) {
-        Object.entries(record.INFO).forEach(([key, value]) => {
-          row[`INFO_${key}`] = value;
-        });
+        if (showExpandedInfo) {
+          // Expanded: separate columns for each INFO field
+          Object.entries(record.INFO).forEach(([key, value]) => {
+            row[`INFO_${key}`] = value;
+          });
+        } else {
+          // Collapsed: single INFO column with original VCF format
+          const infoString = Object.entries(record.INFO)
+            .map(([key, value]) => value === true ? key : `${key}=${value}`)
+            .join(';');
+          row['INFO'] = infoString;
+        }
       }
       
       // Add sample data
       if (record.samples && record.FORMAT) {
-        record.samples.forEach((sample, index) => {
-          record.FORMAT!.forEach(format => {
-            row[`SAMPLE_${index}_${format}`] = sample[format];
+        if (showExpandedSamples) {
+          // Expanded: separate columns for each sample and format
+          record.samples.forEach((sample, index) => {
+            record.FORMAT!.forEach(format => {
+              row[`SAMPLE_${index}_${format}`] = sample[format];
+            });
           });
-        });
+        } else {
+          // Collapsed: single column per sample with original VCF format
+          record.samples.forEach((sample, index) => {
+            const sampleString = record.FORMAT!
+              .map(format => sample[format] || '.')
+              .join(':');
+            row[`SAMPLE_${index}`] = sampleString;
+          });
+        }
       }
       
       return row;
@@ -56,7 +78,7 @@
       {
         headerName: 'Chromosome',
         field: 'CHROM',
-        width: 120,
+        width: 100,
         pinned: 'left',
         sortable: true,
         filter: 'agTextColumnFilter',
@@ -77,7 +99,7 @@
       {
         headerName: 'ID',
         field: 'ID',
-        width: 120,
+        width: 80,
         sortable: true,
         filter: 'agTextColumnFilter',
         resizable: true
@@ -85,7 +107,7 @@
       {
         headerName: 'Reference',
         field: 'REF',
-        width: 100,
+        width: 80,
         sortable: true,
         filter: 'agTextColumnFilter',
         resizable: true
@@ -93,7 +115,7 @@
       {
         headerName: 'Alternative',
         field: 'ALT',
-        width: 120,
+        width: 80,
         sortable: true,
         filter: 'agTextColumnFilter',
         resizable: true
@@ -101,7 +123,7 @@
       {
         headerName: 'Quality',
         field: 'QUAL',
-        width: 100,
+        width: 80,
         sortable: true,
         filter: 'agNumberColumnFilter',
         resizable: true
@@ -109,43 +131,102 @@
       {
         headerName: 'Filter',
         field: 'FILTER',
-        width: 100,
+        width: 80,
         sortable: true,
         filter: 'agTextColumnFilter',
         resizable: true
       }
     ];
     
-    // Add INFO columns
-    const infoColumns = Object.keys($vcfData.header.INFO).map(key => ({
-      headerName: key,
-      field: `INFO_${key}`,
-      width: 100,
-      sortable: true,
-      filter: 'agTextColumnFilter',
-      resizable: true,
-      headerTooltip: $vcfData!.header.INFO[key]
-    }));
-    
-    // Add sample columns
-    const sampleColumns: any[] = [];
-    if ($vcfData.header.samples.length > 0) {
-      $vcfData.header.samples.forEach((sample, index) => {
-        Object.keys($vcfData!.header.FORMAT).forEach(format => {
-          sampleColumns.push({
-            headerName: `${sample}_${format}`,
-            field: `SAMPLE_${index}_${format}`,
-            width: 100,
+    // Add INFO columns with hierarchical grouping
+    const infoColumns = showExpandedInfo 
+      ? {
+          headerName: 'INFO',
+          headerClass: 'info-group-header',
+          headerGroupComponent: InfoHeaderComponent(),
+          children: Object.keys($vcfData.header.INFO).map(key => ({
+            headerName: key,
+            field: `INFO_${key}`,
+            width: 150,
             sortable: true,
             filter: 'agTextColumnFilter',
             resizable: true,
-            headerTooltip: `${sample} - ${$vcfData!.header.FORMAT[format]}`
+            headerTooltip: $vcfData!.header.INFO[key]
+          })),
+          headerGroupComponentParams: {
+            showExpandedInfo: showExpandedInfo,
+            toggleFunction: toggleInfoColumns,
+            timestamp: Date.now()
+          }
+        }
+      : {
+          headerName: 'INFO',
+          field: 'INFO',
+          width: 300,
+          sortable: true,
+          filter: 'agTextColumnFilter',
+          resizable: true,
+          headerTooltip: 'INFO fields in original VCF format (click to expand)',
+          headerClass: 'info-header-collapsed',
+          headerComponent: InfoHeaderComponent(),
+          headerComponentParams: {
+            showExpandedInfo: showExpandedInfo,
+            toggleFunction: toggleInfoColumns,
+            timestamp: Date.now()
+          }
+        };
+    
+    // Add sample columns with hierarchical grouping
+    const sampleColumns: any[] = [];
+    if ($vcfData.header.samples.length > 0) {
+      $vcfData.header.samples.forEach((sample, index) => {
+        if (showExpandedSamples) {
+          // Expanded: hierarchical grouping with sample as parent
+          sampleColumns.push({
+            headerName: sample,
+            headerClass: 'sample-group-header',
+            headerGroupComponent: SampleHeaderComponent(),
+            children: Object.keys($vcfData!.header.FORMAT).map(format => ({
+              headerName: format,
+              field: `SAMPLE_${index}_${format}`,
+              width: 120,
+              sortable: true,
+              filter: 'agTextColumnFilter',
+              resizable: true,
+              headerTooltip: `${sample} - ${format}: ${$vcfData!.header.FORMAT[format]}`
+            })),
+            headerGroupComponentParams: {
+              showExpandedSamples: showExpandedSamples,
+              toggleFunction: toggleSampleColumns,
+              sampleName: sample,
+              timestamp: Date.now()
+            }
           });
-        });
+        } else {
+          // Collapsed: single column per sample
+          sampleColumns.push({
+            headerName: sample,
+            field: `SAMPLE_${index}`,
+            width: 150,
+            sortable: true,
+            filter: 'agTextColumnFilter',
+            resizable: true,
+            headerTooltip: `${sample} - Format: ${$vcfData!.header.FORMAT ? Object.keys($vcfData!.header.FORMAT).join(':') : ''} (click to expand)`,
+            headerClass: 'sample-header-collapsed',
+            headerComponent: SampleHeaderComponent(),
+            headerComponentParams: {
+              showExpandedSamples: showExpandedSamples,
+              toggleFunction: toggleSampleColumns,
+              sampleName: sample,
+              timestamp: Date.now()
+            }
+          });
+        }
       });
     }
     
-    return [...baseColumns, ...infoColumns, ...sampleColumns];
+    // Return all columns with INFO as grouped or single column
+    return [...baseColumns, infoColumns, ...sampleColumns];
   }
   
   function initializeGrid() {
@@ -155,31 +236,18 @@
       columnDefs: createColumnDefs(),
       rowData: [],
       defaultColDef: {
-        sortable: true,
-        filter: true,
         resizable: true,
-        minWidth: 80
+        sortable: true,
+        filter: true
       },
-      animateRows: true,
-      suppressMenuHide: true,
-      rowSelection: 'multiple',
-      suppressRowClickSelection: true,
-      pagination: true,
-      paginationPageSize: 100,
       onGridReady: (params) => {
         gridApi = params.api;
         columnApi = params.columnApi;
-        
-        // Auto-size columns on initial load
-        params.api.sizeColumnsToFit();
         
         // Update with current data
         if (records) {
           updateGridData(records);
         }
-      },
-      onFirstDataRendered: (params) => {
-        params.api.sizeColumnsToFit();
       }
     };
     
@@ -198,10 +266,32 @@
   
   // Reactive update when data changes
   $: if ($vcfData && gridApi) {
-    // Update column definitions when data changes
+    updateGridColumns();
+  }
+  
+  // Reactive update when INFO expansion state changes
+  $: if (gridApi && showExpandedInfo !== undefined) {
+    updateGridColumns();
+  }
+  
+  // Reactive update when sample expansion state changes
+  $: if (gridApi && showExpandedSamples !== undefined) {
+    updateGridColumns();
+  }
+  
+  function updateGridColumns() {
+    if (!gridApi) return;
+    
     const newColumnDefs = createColumnDefs();
     gridApi.setColumnDefs(newColumnDefs);
     updateGridData(records);
+    
+    // Force refresh of all headers after a short delay
+    setTimeout(() => {
+      if (gridApi) {
+        gridApi.refreshHeader();
+      }
+    }, 10);
   }
   
   export function exportData() {
@@ -224,9 +314,130 @@
   }
   
   export function autoSizeColumns() {
-    if (columnApi) {
-      columnApi.autoSizeAllColumns();
+    if (gridApi) {
+      const allColumnIds = gridApi.getAllDisplayedColumns().map((col: any) => col.getColId());
+      gridApi.autoSizeColumns(allColumnIds);
     }
+  }
+  
+  function toggleInfoColumns() {
+    showExpandedInfo = !showExpandedInfo;
+  }
+  
+  function toggleSampleColumns() {
+    showExpandedSamples = !showExpandedSamples;
+  }
+  
+  // Custom header component for INFO column
+  function InfoHeaderComponent() {
+    return class {
+      private eGui!: HTMLElement;
+      private iconElement!: HTMLElement;
+      private params!: any;
+      
+      init(params: any) {
+        this.params = params;
+        this.eGui = document.createElement('div');
+        this.eGui.style.display = 'flex';
+        this.eGui.style.alignItems = 'center';
+        this.eGui.style.gap = '8px';
+        this.eGui.style.cursor = 'pointer';
+        this.eGui.style.padding = '0 8px';
+        this.eGui.style.height = '100%';
+        
+        this.iconElement = document.createElement('span');
+        this.iconElement.innerHTML = params.showExpandedInfo ? '▼' : '▶';
+        this.iconElement.style.fontSize = '12px';
+        this.iconElement.style.color = '#666';
+        
+        const text = document.createElement('span');
+        text.innerHTML = params.displayName || 'INFO';
+        text.style.fontWeight = '600';
+        
+        this.eGui.appendChild(this.iconElement);
+        this.eGui.appendChild(text);
+        
+        this.eGui.addEventListener('click', () => {
+          if (params.toggleFunction) {
+            params.toggleFunction();
+          }
+        });
+      }
+      
+      refresh(params: any) {
+        this.params = params;
+        if (this.iconElement) {
+          this.iconElement.innerHTML = params.showExpandedInfo ? '▼' : '▶';
+        }
+        return true;
+      }
+      
+      getGui() {
+        return this.eGui;
+      }
+      
+      destroy() {
+        if (this.eGui && this.eGui.parentElement) {
+          this.eGui.parentElement.removeChild(this.eGui);
+        }
+      }
+    };
+  }
+  
+  // Custom header component for Sample columns
+  function SampleHeaderComponent() {
+    return class {
+      private eGui!: HTMLElement;
+      private iconElement!: HTMLElement;
+      private params!: any;
+      
+      init(params: any) {
+        this.params = params;
+        this.eGui = document.createElement('div');
+        this.eGui.style.display = 'flex';
+        this.eGui.style.alignItems = 'center';
+        this.eGui.style.gap = '8px';
+        this.eGui.style.cursor = 'pointer';
+        this.eGui.style.padding = '0 8px';
+        this.eGui.style.height = '100%';
+        
+        this.iconElement = document.createElement('span');
+        this.iconElement.innerHTML = params.showExpandedSamples ? '▼' : '▶';
+        this.iconElement.style.fontSize = '12px';
+        this.iconElement.style.color = '#666';
+        
+        const text = document.createElement('span');
+        text.innerHTML = params.displayName || params.sampleName;
+        text.style.fontWeight = '600';
+        
+        this.eGui.appendChild(this.iconElement);
+        this.eGui.appendChild(text);
+        
+        this.eGui.addEventListener('click', () => {
+          if (params.toggleFunction) {
+            params.toggleFunction();
+          }
+        });
+      }
+      
+      refresh(params: any) {
+        this.params = params;
+        if (this.iconElement) {
+          this.iconElement.innerHTML = params.showExpandedSamples ? '▼' : '▶';
+        }
+        return true;
+      }
+      
+      getGui() {
+        return this.eGui;
+      }
+      
+      destroy() {
+        if (this.eGui && this.eGui.parentElement) {
+          this.eGui.parentElement.removeChild(this.eGui);
+        }
+      }
+    };
   }
 </script>
 
@@ -284,35 +495,10 @@
       <!-- Grid Container -->
       <div 
         bind:this={gridContainer}
-        class="ag-theme-alpine h-full"
-        style="height: calc(100% - 65px);"
+        class="ag-theme-alpine"
+        style="height: calc(100% - 65px); width: 100%; min-height: 400px;"
       ></div>
     </div>
   {/if}
 </div>
 
-<style>
-  :global(.ag-theme-alpine) {
-    --ag-header-height: 40px;
-    --ag-row-height: 32px;
-    --ag-font-size: 12px;
-    --ag-font-family: system-ui, -apple-system, sans-serif;
-    --ag-header-background-color: #f8fafc;
-    --ag-header-cell-hover-background-color: #e2e8f0;
-    --ag-row-hover-color: #f1f5f9;
-    --ag-selected-row-background-color: #dbeafe;
-  }
-  
-  :global(.ag-theme-alpine .ag-header-cell) {
-    font-weight: 600;
-    color: #374151;
-  }
-  
-  :global(.ag-theme-alpine .ag-cell) {
-    border-right: 1px solid #e5e7eb;
-  }
-  
-  :global(.ag-theme-alpine .ag-pinned-left-cols-container) {
-    border-right: 2px solid #d1d5db;
-  }
-</style>
