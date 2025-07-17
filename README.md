@@ -13,9 +13,14 @@ No installation required! Just click the link above to start analyzing VCF files
 - **Client-side VCF Processing**: Upload and analyze VCF files directly in your browser
 - **Multiple Loading Methods**: Upload files, load from URLs, or use sample data
 - **Excel-like Interface**: Professional data grid with sorting, filtering, and pagination
+- **Hierarchical Column Management**: Expand/collapse INFO and sample columns for detailed analysis
+  - **INFO Column Expansion**: Toggle between compact VCF format and individual INFO field columns
+  - **Sample Column Expansion**: Toggle between FORMAT strings and separate sub-columns per sample
+  - **Interactive Headers**: Click ▶/▼ icons in headers to expand/collapse sections independently
 - **File Format Support**: Handles both .vcf and .vcf.gz files (local and remote)
 - **Advanced Filtering**: Column-specific filters with text, numeric, and range operations
 - **Multi-format Export**: Export filtered data as VCF, CSV, or JSON
+- **Optimized Column Sizing**: Smart initial widths with auto-sizing functionality
 - **Performance Optimized**: Handles large datasets with virtual scrolling
 - **Responsive Design**: Works on desktop and tablet devices
 - **Sample Data**: Includes demonstration datasets for immediate exploration
@@ -74,12 +79,59 @@ The built files will be in the `build` directory, ready for deployment to any st
 
 ## Usage
 
+### Loading Data
+
 1. **Choose loading method**: Select between "Upload File" or "Load from URL" 
 2. **Upload a VCF file**: Click "Upload File" or drag and drop a .vcf or .vcf.gz file
 3. **Load from URL**: Enter a direct URL to a VCF file (must support CORS)
 4. **Load sample data**: Click "Load Sample Data" to explore with demonstration data
-5. **Explore the data**: Use the data grid to sort, filter, and analyze variants
-6. **Export results**: Select rows and export filtered data in your preferred format
+
+### Exploring VCF Data
+
+Once your data is loaded, you'll see a professional data grid with standard VCF columns:
+
+**Base Columns (always visible):**
+- Chromosome, Position, ID, Reference, Alternative, Quality, Filter
+
+**INFO Column Management:**
+- **Collapsed (default)**: Shows INFO data in original VCF format (`AC=2;AF=1.00;AN=2`)
+- **Expanded**: Click the ▶ icon in INFO header to show individual columns for each INFO field
+- **Collapse back**: Click the ▼ icon in the expanded INFO header to return to compact format
+
+**Sample Column Management:**
+- **Collapsed (default)**: Shows sample data in original FORMAT format (`1/1:0,26:26:78`)
+- **Expanded**: Click the ▶ icon in any sample header to show individual FORMAT sub-columns (GT, AD, DP, etc.)
+- **Collapse back**: Click the ▼ icon in the expanded sample header to return to compact format
+- **Independent control**: Each sample can be expanded/collapsed separately
+
+### Data Grid Features
+
+- **Sorting**: Click any column header to sort data
+- **Filtering**: Use the filter icon in column headers for advanced filtering
+- **Column Resizing**: Drag column borders to adjust widths
+- **Auto-sizing**: Click "Auto-size Columns" to fit all columns to screen width
+- **Row Selection**: Click checkboxes to select specific variants
+- **Pagination**: Navigate through large datasets with built-in pagination
+
+### Export Options
+
+1. **Select data**: Choose specific rows or use "Select All" 
+2. **Export format**: Choose from VCF, CSV, or JSON formats
+3. **Download**: Filtered and selected data will be exported
+4. **Export results**: Select rows and export filtered data in your preferred format
+
+### Visual Design Features
+
+**Interactive Column Headers:**
+- 🔽 **Expand Icons (▶)**: Indicates collapsed columns that can be expanded
+- 🔼 **Collapse Icons (▼)**: Indicates expanded sections that can be collapsed  
+- **Color Coding**: Gray backgrounds for INFO sections, blue backgrounds for sample sections
+- **Hover Effects**: Headers highlight on hover to show interactivity
+
+**Data Formats:**
+- **Original VCF Format**: Maintains data integrity with standard VCF field formatting
+- **Expanded Analysis**: Individual columns allow for precise filtering and sorting of specific metrics
+- **Best of Both Worlds**: Switch between compact view for overview and detailed view for analysis
 
 ### Loading from URL
 
@@ -190,6 +242,9 @@ Deploy the `build` directory to any static hosting service:
 - Progressive file parsing with progress indicators
 - Client-side filtering and sorting
 - Memory-efficient data structures
+- Hierarchical column grouping with dynamic rendering
+- Optimized column sizing and auto-fit algorithms
+- Custom header components for interactive UI elements
 
 ## Development
 
