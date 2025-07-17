@@ -147,7 +147,7 @@
           children: Object.keys($vcfData.header.INFO).map(key => ({
             headerName: key,
             field: `INFO_${key}`,
-            width: 150,
+            width: 80,
             sortable: true,
             filter: 'agTextColumnFilter',
             resizable: true,
@@ -162,7 +162,7 @@
       : {
           headerName: 'INFO',
           field: 'INFO',
-          width: 300,
+          width: 200,
           sortable: true,
           filter: 'agTextColumnFilter',
           resizable: true,
@@ -189,7 +189,7 @@
             children: Object.keys($vcfData!.header.FORMAT).map(format => ({
               headerName: format,
               field: `SAMPLE_${index}_${format}`,
-              width: 120,
+              width: 80,
               sortable: true,
               filter: 'agTextColumnFilter',
               resizable: true,
@@ -207,7 +207,7 @@
           sampleColumns.push({
             headerName: sample,
             field: `SAMPLE_${index}`,
-            width: 150,
+            width: 120,
             sortable: true,
             filter: 'agTextColumnFilter',
             resizable: true,
@@ -315,8 +315,8 @@
   
   export function autoSizeColumns() {
     if (gridApi) {
-      const allColumnIds = gridApi.getAllDisplayedColumns().map((col: any) => col.getColId());
-      gridApi.autoSizeColumns(allColumnIds);
+      // Use sizeColumnsToFit which is the most reliable method
+      gridApi.sizeColumnsToFit();
     }
   }
   
